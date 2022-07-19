@@ -1,1 +1,1 @@
-# open-pinyin-parser
+# open-pinyin
