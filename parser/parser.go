@@ -58,6 +58,10 @@ func Traverse(root *PinyinNode) [][]string {
 			}
 		}
 
+		if len(nodePath) < 1 {
+			continue
+		}
+
 		if legal {
 			//log.Println("legal: ", nodePath)
 			pinyinGroups = append(pinyinGroups, nodePath)
@@ -81,7 +85,9 @@ func TraverseDAG(prefix []string, root *PinyinNode) [][]string {
 		*/
 		temp := make([]string, len(prefix))
 		copy(temp, prefix)
-		temp = append(temp, root.Pinyin)
+		if len(root.Pinyin) > 0 {
+			temp = append(temp, root.Pinyin)
+		}
 		return [][]string{temp}
 	} else {
 		temp := make([]string, 0)
@@ -275,7 +281,7 @@ func minCut(text string) (pinyin, leftover string) {
 		}
 	}
 
-	if dict.IsLegalPinyin(pinyin) {
+	if dict.IsLegalPinyin(text) {
 		return text, ""
 	} else {
 		return text[0:1], text[1:]
