@@ -28,7 +28,7 @@ func ParseInitial(input string) []string {
 func Parse(text string) [][]string {
 	root := &PinyinNode{}
 	root.DirectedNodes = make([]*PinyinNode, 0)
-	root.Leftover = text
+	root.Leftover = strings.ToLower(text)
 	t1 := time.Now()
 	parsePinyinDAG(root, make(map[string][]*PinyinNode))
 	pinyinGroups := Traverse(root)
@@ -233,6 +233,7 @@ func GreedyFirst(text string) string {
 		pinyin, cutLeftover := maxCut(candidate)
 		if pinyin == "" || cutLeftover == "" {
 			log.Println("!!!!!!!!!!!!!!!!!!!!!!")
+			return ""
 		}
 		return pinyin
 	}
@@ -291,7 +292,7 @@ func minCut(text string) (pinyin, leftover string) {
 func maxCut(text string) (pinyin, leftover string) {
 	for i := len(text) - 1; i > 0; i-- {
 		candidate := text[0:i]
-		if dict.IsPinyin(candidate) {
+		if dict.IsPinyin(candidate) && !dict.IsIuv(candidate) && dict.Is2LetterConsonant(candidate) {
 			leftover = text[i:]
 			return candidate, leftover
 		}

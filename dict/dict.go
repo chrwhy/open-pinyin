@@ -75,6 +75,10 @@ func IsPinyin(pinyin string) bool {
 	return matched
 }
 
+func Is2LetterConsonant(pinyin string) bool {
+	return "zh" == pinyin || "ch" == pinyin || "sh" == pinyin
+}
+
 func IsLegalPinyin(pinyin string) bool {
 	if len(pinyin) == 1 {
 		if "a" == pinyin || "o" == pinyin || "e" == pinyin {
@@ -83,7 +87,7 @@ func IsLegalPinyin(pinyin string) bool {
 		return false
 	}
 
-	if len(pinyin) == 2 && (pinyin == "zh" || pinyin == "ch" || pinyin == "sh" || pinyin == "ng") {
+	if len(pinyin) == 2 && (Is2LetterConsonant(pinyin) || pinyin == "ng") {
 		return false
 	}
 

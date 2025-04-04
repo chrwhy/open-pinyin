@@ -55,14 +55,22 @@ func TestCase() {
 
 func Test(input string) {
 	result := parser.Parse(input)
-	log.Println(input, ":")
-	for i, _ := range result {
-		log.Println(result[i])
-	}
+	log.Println(result)
 }
 
 func main() {
-	//TestCase()
-	Test("yueguang")
+	Test("livvv")
+	return
+	TestCase()
+	TestCase()
+	Test("paoda")
+	Test("pdf")
+	Test("luxian")
+	Test("liuxiang")
+
 	Test("anzn")
+	Test("achen")
+	Test("jaychou")
+	Test("chrong")
+	//Test("nginx")
 }
