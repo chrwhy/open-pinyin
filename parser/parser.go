@@ -11,6 +11,7 @@ type PinyinNode struct {
 	Pinyin        string
 	Leftover      string
 	DirectedNodes []*PinyinNode
+	Illegal       bool
 }
 
 func ParseInitial(input string) []string {
@@ -28,7 +29,7 @@ func ParseInitial(input string) []string {
 func Parse(text string) [][]string {
 	root := &PinyinNode{}
 	root.DirectedNodes = make([]*PinyinNode, 0)
-	root.Leftover = text
+	root.Leftover = strings.ToLower(text)
 	t1 := time.Now()
 	parsePinyinDAG(root, make(map[string][]*PinyinNode))
 	pinyinGroups := Traverse(root)
@@ -76,6 +77,9 @@ func Traverse(root *PinyinNode) [][]string {
 
 func TraverseDAG(prefix []string, root *PinyinNode) [][]string {
 	result := make([][]string, 0)
+	if root.Illegal {
+		return nil
+	}
 	if len(root.DirectedNodes) < 1 {
 		/*
 			prefix = append(prefix, root.Pinyin) FUCK this...
@@ -103,6 +107,9 @@ func TraverseDAG(prefix []string, root *PinyinNode) [][]string {
 }
 
 func parsePinyinDAG(node *PinyinNode, parseCache map[string][]*PinyinNode) {
+	if node.Leftover == "" {
+		return
+	}
 	raw := node.Leftover
 	if len(parseCache[raw]) > 0 {
 		node.DirectedNodes = parseCache[raw]
@@ -110,7 +117,8 @@ func parsePinyinDAG(node *PinyinNode, parseCache map[string][]*PinyinNode) {
 	}
 
 	head := GreedyFirst(node.Leftover)
-	if head == "" || node.Leftover == "" {
+	if head == "" && len(node.Leftover) > 0 {
+		node.Illegal = true
 		return
 	}
 	//log.Println("Greedy head:", head)
@@ -233,10 +241,10 @@ func GreedyFirst(text string) string {
 		pinyin, cutLeftover := maxCut(candidate)
 		if pinyin == "" || cutLeftover == "" {
 			log.Println("!!!!!!!!!!!!!!!!!!!!!!")
+			return pinyin
 		}
 		return pinyin
 	}
-
 }
 
 func GreedyParse(text string) []string {
@@ -291,11 +299,11 @@ func minCut(text string) (pinyin, leftover string) {
 func maxCut(text string) (pinyin, leftover string) {
 	for i := len(text) - 1; i > 0; i-- {
 		candidate := text[0:i]
-		if dict.IsPinyin(candidate) {
+		if dict.IsPinyin(candidate) && !dict.IsIuv(candidate) && !dict.Is2LetterConsonant(candidate) {
 			leftover = text[i:]
 			return candidate, leftover
 		}
 	}
 
-	return text, ""
+	return "", text
 }

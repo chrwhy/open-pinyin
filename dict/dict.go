@@ -12,6 +12,7 @@ var PINYIN = make(map[string]string)
 var CN_PINYIN = make(map[string][]string)
 var PINYIN_PREFIX = make(map[string]string)
 var NOT_SPLIT = make(map[string]string)
+var SUB_PINYIN = make(map[string]string)
 
 const (
 	PINYIN_DICT    = "pinyin.dict"
@@ -25,6 +26,7 @@ const (
 func init() {
 	loadPinyin()
 	loadCnPinyin()
+	buildSubPinyinDict()
 }
 
 func loadPinyin() {
@@ -75,6 +77,10 @@ func IsPinyin(pinyin string) bool {
 	return matched
 }
 
+func Is2LetterConsonant(pinyin string) bool {
+	return "zh" == pinyin || "ch" == pinyin || "sh" == pinyin
+}
+
 func IsLegalPinyin(pinyin string) bool {
 	if len(pinyin) == 1 {
 		if "a" == pinyin || "o" == pinyin || "e" == pinyin {
@@ -83,7 +89,7 @@ func IsLegalPinyin(pinyin string) bool {
 		return false
 	}
 
-	if len(pinyin) == 2 && (pinyin == "zh" || pinyin == "ch" || pinyin == "sh" || pinyin == "ng") {
+	if len(pinyin) == 2 && (Is2LetterConsonant(pinyin) || pinyin == "ng") {
 		return false
 	}
 
@@ -107,5 +113,24 @@ func GetCnPinyin(cn string) []string {
 			log.Println(cn, "has no pinyin...")
 		}
 		return nil
+	}
+}
+
+func buildSubPinyinDict() {
+	for k, _ := range PINYIN {
+		//log.Println(k)
+		if len(k) == 1 {
+			if IsLegalPinyin(k) {
+				SUB_PINYIN[k] = k
+			}
+			continue
+		}
+
+		for k1, _ := range PINYIN {
+			if k != k1 && strings.HasPrefix(k1, k) && IsLegalPinyin(k) {
+				SUB_PINYIN[k] = k
+				break
+			}
+		}
 	}
 }
