@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"unicode"
 )
@@ -30,7 +33,8 @@ func init() {
 }
 
 func loadPinyin() {
-	file, err := os.Open(PINYIN_DICT)
+	dictDir := path.Join(path.Dir(getCurrentFilePath()), "")
+	file, err := os.Open(filepath.Join(dictDir, PINYIN_DICT))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,8 +57,14 @@ func loadPinyin() {
 	NOT_SPLIT[ER] = ER
 }
 
+func getCurrentFilePath() string {
+	_, filePath, _, _ := runtime.Caller(1)
+	return filePath
+}
+
 func loadCnPinyin() {
-	file, err := os.Open(CN_PINYIN_DICT)
+	dictDir := path.Join(path.Dir(getCurrentFilePath()), "")
+	file, err := os.Open(filepath.Join(dictDir, CN_PINYIN_DICT))
 	if err != nil {
 		log.Fatal(err)
 	}

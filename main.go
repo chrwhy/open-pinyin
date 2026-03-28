@@ -1,18 +1,14 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/chrwhy/open-pinyin/parser"
-	"log"
 )
 
-func Test(input string) {
-	result := parser.Parse(input)
-	log.Println(input, ":")
-	for i, _ := range result {
-		log.Println(result[i])
-	}
-}
-
 func main() {
-	Test("ceshi")
+	result := parser.Parse("oyhq")
+	fmt.Println(result)
+	initial := parser.ParseInitial("oyhq")
+	fmt.Println(initial)
 }
