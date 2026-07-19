@@ -94,9 +94,10 @@ func TraverseDAG(prefix []string, root *PinyinNode) [][]string {
 		}
 		return [][]string{temp}
 	} else {
-		temp := make([]string, 0)
+		temp := make([]string, len(prefix))
+		copy(temp, prefix)
 		if len(root.Pinyin) > 0 {
-			temp = append(prefix, root.Pinyin)
+			temp = append(temp, root.Pinyin)
 		}
 		for _, child := range root.DirectedNodes {
 			result = append(result, TraverseDAG(temp, child)...)
